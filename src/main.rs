@@ -1,10 +1,13 @@
 use block_modes::BlockMode;
 use crate::cipher::Cipher;
 mod cipher;
+mod db;
 
 fn main() {
     let cipher = Cipher::new();
     let token = tokenize("blah", &cipher);
+    let (key, iv) = cipher.get_cipher_data();
+    //println!("cipher key {:?}, iv {:?}", key, iv);
     println!("tokenized input - {:?}", &token);
     println!("{:?}", detokenize(&token, &cipher));
 }

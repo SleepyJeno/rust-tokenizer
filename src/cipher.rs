@@ -15,6 +15,8 @@ pub struct Cipher {
     The Cipher struct is used to encrypt and decrypt data. It contains a key, an IV, and a cipher.
     The Cipher makes use of AES algorithm and the corresponding crate
     Users can add salt to the plaintext to make it harder for an attacker to decrypt the data
+
+    get_cipher_data returns a tuple of (key, iv) to be saved in the DB
 */
 impl Cipher {
     pub fn new() -> Self{ 
@@ -25,7 +27,7 @@ impl Cipher {
             key,
             iv,
             cipher
-          }
+        }
     }
 
     fn generate_key() -> Vec<u8> {
@@ -43,18 +45,23 @@ impl Cipher {
     //TODO
     
     // fn generte_salt() -> Vec<u8> {
-    //     let mut bytes = [0; 8];
-    //     rand::thread_rng().fill_bytes(&mut bytes);
-    //     bytes.to_vec()
-    // }
-
-    // pub fn add_salt(&self, plaintext: &[u8]) -> Vec<u8> {
-    //     let salt = Self::generte_salt();
-    //     let mut buffer = [0u8; 136];
-    //     buffer[..plaintext.len()].copy_from_slice(plaintext);
-    //     buffer[plaintext.len()..].copy_from_slice(&salt);
-    //     buffer.to_vec()
-    // }
+        //     let mut bytes = [0; 8];
+        //     rand::thread_rng().fill_bytes(&mut bytes);
+        //     bytes.to_vec()
+        // }
+        
+        // pub fn add_salt(&self, plaintext: &[u8]) -> Vec<u8> {
+            //     let salt = Self::generte_salt();
+            //     let mut buffer = [0u8; 136];
+            //     buffer[..plaintext.len()].copy_from_slice(plaintext);
+            //     buffer[plaintext.len()..].copy_from_slice(&salt);
+            //     buffer.to_vec()
+            // }
+    
+    //TODO: make private
+    pub fn get_cipher_data(&self) -> (Vec<u8>, Vec<u8>) {
+        (self.key.clone(), self.iv.clone())
+    }
 
     //TODO: pad ciphertext with zeros to reach 128 bytes
     pub fn encrypt(&self, plaintext: &[u8]) -> Vec<u8> {
