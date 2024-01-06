@@ -1,3 +1,4 @@
+use rand::RngCore;
 use rand::{Rng, distributions::Alphanumeric};
 use aes::Aes128;
 use block_modes::{BlockMode, Cbc};
@@ -10,26 +11,28 @@ fn main() {
     tokenize("blah");
 }
 
-fn generate_salt() -> Vec<char> {
-    let salt: Vec<char> = rand::thread_rng().sample_iter(&Alphanumeric).take(8).map(char::from).collect();
-    salt
+fn generate_key() -> Vec<u8> {
+    let mut bytes = [0; 16];
+    rand::thread_rng().fill_bytes(&mut bytes);
+    println!("{:?}", bytes);
+    bytes.to_vec()
+}
+
+fn generate_iv() -> Vec<u8> {
+    let mut bytes = [0; 16];
+    rand::thread_rng().fill_bytes(&mut bytes);
+    bytes.to_vec()
 }
 
 fn tokenize(input: &str) -> Vec<char> {
-    let mut salt = generate_salt();
-    let mut input_vec: Vec<char> = input.chars().collect();
-    input_vec.extend(salt.iter()); //we want to save the salt value hence extend vs append
-    // println!("{:?}, {:?}", input_vec, salt);
+    let key = generate_key();
+    let iv = generate_iv();
+    let plaintext = input.as_bytes();
+    let cipher = Aes128Cbc::new_from_slices(&key, &iv).unwrap();
 
-    let cipher = Aes128Cbc::new_from_slices(&salt, &iv).unwrap();
-
-
-    let pos = input.len();
-
+    let pos = plaintext.len();
     let mut buffer = [0u8; 128];
-
-    buffer[..pos].copy_from_slice(input);
-
+    buffer[..pos].copy_from_slice(plaintext);
     let ciphertext = cipher.encrypt(&mut buffer, pos).unwrap();
 
     println!("\nCiphertext: {:?}",hex::encode(ciphertext));
