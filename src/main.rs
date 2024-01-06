@@ -10,6 +10,7 @@ fn main() {
 }
 
 fn tokenize(input: &str, cipher: &Cipher) -> String {
+    //TODO: add check for input string size to be less than 128 bytes
     let plaintext = input.as_bytes();
     let ciphertext = cipher.encrypt(&plaintext);
     hex::encode(ciphertext)
