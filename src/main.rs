@@ -4,7 +4,6 @@ use block_modes::{BlockMode, Cbc};
 use block_modes::block_padding::Pkcs7;
 type Aes128Cbc = Cbc<Aes128, Pkcs7>;
 
-
 struct Cipher {
     key: Vec<u8>,
     iv: Vec<u8>,
@@ -39,22 +38,26 @@ impl Cipher {
 }
 
 fn main() {
-    println!("Hello, world!");
-    println!("{:?}", tokenize("blah"));
+    let cipher_base = Cipher::new();
+    let token = tokenize("blah", &cipher_base);
+    println!("tokenized input - {:?}", &token);
+    println!("{:?}", detokenize(&token, &cipher_base));
 }
 
-fn tokenize(input: &str) -> String {
-    let cipher_base = Cipher::new();
+fn tokenize(input: &str, cipher_base: &Cipher) -> String {
     let plaintext = input.as_bytes();
     let pos = plaintext.len();
     let mut buffer = [0u8; 128];
     buffer[..pos].copy_from_slice(plaintext);
-    let ciphertext = cipher_base.cipher.encrypt(&mut buffer, pos).unwrap();
+    let ciphertext = cipher_base.cipher.clone().encrypt(&mut buffer, pos).unwrap();
 
     hex::encode(ciphertext)
 }
 
-fn detokenize(input: &str, cipher: Cbc<Aes128, Pkcs7>) -> String {
+fn detokenize(input: &str, cipher: &Cipher) -> String {
+    let ciphertext = hex::decode(input).unwrap();
+    let mut buffer = ciphertext.to_vec();
+    let decrypted = cipher.cipher.clone().decrypt(&mut buffer).unwrap();
 
-    String::from("a")
+    String::from_utf8(decrypted.to_vec()).unwrap()
 }
