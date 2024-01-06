@@ -14,17 +14,18 @@ fn main() {
 fn generate_key() -> Vec<u8> {
     let mut bytes = [0; 16];
     rand::thread_rng().fill_bytes(&mut bytes);
-    println!("{:?}", bytes);
+
     bytes.to_vec()
 }
 
 fn generate_iv() -> Vec<u8> {
     let mut bytes = [0; 16];
     rand::thread_rng().fill_bytes(&mut bytes);
+
     bytes.to_vec()
 }
 
-fn tokenize(input: &str) -> Vec<char> {
+fn tokenize(input: &str) -> String {
     let key = generate_key();
     let iv = generate_iv();
     let plaintext = input.as_bytes();
@@ -35,8 +36,5 @@ fn tokenize(input: &str) -> Vec<char> {
     buffer[..pos].copy_from_slice(plaintext);
     let ciphertext = cipher.encrypt(&mut buffer, pos).unwrap();
 
-    println!("\nCiphertext: {:?}",hex::encode(ciphertext));
-
-    vec![char::from(2)]
-
+    hex::encode(ciphertext)
 }
