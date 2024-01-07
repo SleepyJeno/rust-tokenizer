@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=test_password_123
+      - POSTGRES_DB=tokenizer_db
+      - POSTGRES_USER=postgres
+    #to avoid conflicts on the host we use a custom port
+    ports:
+      - '5443:5432'
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U postgres'"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 5s  
+  tokenizer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=test_password_123
+      - DB_HOST=postgres
+      - DB_NAME=tokenizer_db
+      - DB_PORT='5432' #containers must reference each other by actual container ports
+    depends_on:
+      postgres:
+        condition: service_healthy
