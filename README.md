@@ -5,5 +5,8 @@
 * De-tokenize the token back into original input
 * Input string limit - 128 bytes
 
+## Requirements:
+* Postgresql database engine version >= 12
+
 ### Tokenization algorithm:
 * A random hash is generated for every input and is stored along with the tokenized string
