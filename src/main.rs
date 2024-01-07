@@ -1,5 +1,5 @@
 use block_modes::BlockMode;
-use crate::{cipher::Cipher, db::{Credentials, establish_connection}};
+use crate::{cipher::Cipher, db::{Credentials, establish_connection, create_tables}};
 mod cipher;
 mod db;
 
@@ -7,7 +7,7 @@ fn main() {
     let cipher = Cipher::new();
     let token = tokenize("blah", &cipher);
     let (key, iv) = cipher.get_cipher_data();
-    //println!("cipher key {:?}, iv {:?}", key, iv);
+    println!("cipher key {:?}, iv {:?}", key, iv);
     println!("tokenized input - {:?}", &token);
     println!("{:?}", detokenize(&token, &cipher));
 
@@ -21,7 +21,8 @@ fn main() {
         ssl_mode: std::env::var("DB_SSL_MODE").unwrap_or(String::from("disable"))
     };
 
-    establish_connection(credentials);
+    let mut client = establish_connection(credentials);
+    create_tables(&mut client).expect("Error creating DB tables");
 }
 
 fn tokenize(input: &str, cipher: &Cipher) -> String {
