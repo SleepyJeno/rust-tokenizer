@@ -1,6 +1,7 @@
 use block_modes::BlockMode;
-use crate::{cipher::Cipher, db::{Credentials, establish_connection, create_tables}};
+use crate::{cipher::Cipher, db::{connection::{Credentials, establish_connection}, schema::create_tables}};
 mod cipher;
+
 mod db;
 
 fn main() {
