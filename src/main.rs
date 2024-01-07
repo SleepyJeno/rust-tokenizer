@@ -15,9 +15,10 @@ fn main() {
     let credentials = Credentials {
         username: std::env::var("DB_USERNAME").expect("DB_USERNAME must be set"),
         password: std::env::var("DB_PASSWORD").expect("DB_PASSWORD must be set"),
-        url: std::env::var("DB_URL").expect("DB_URL must be set"),
+        host: std::env::var("DB_URL").expect("DB_URL must be set"),
         port: std::env::var("DB_PORT").expect("DB_PORT must be set"),
         db_name: std::env::var("DB_NAME").expect("DB_NAME must be set"),
+        ssl_mode: std::env::var("DB_SSL_MODE").unwrap_or(String::from("disable"))
     };
 
     establish_connection(credentials);
