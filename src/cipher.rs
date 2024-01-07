@@ -30,6 +30,15 @@ impl Cipher {
         }
     }
 
+    pub fn from(key: Vec<u8>, iv: Vec<u8>) -> Self{ 
+        let cipher: Aes128Cbc = Aes128Cbc::new_from_slices(&key, &iv).unwrap();
+        Self {
+            key,
+            iv,
+            cipher
+        }
+    }
+
     fn generate_key() -> Vec<u8> {
         let mut bytes = [0; 16];
         rand::thread_rng().fill_bytes(&mut bytes);
