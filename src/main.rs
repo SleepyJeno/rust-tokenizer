@@ -1,5 +1,5 @@
 use block_modes::BlockMode;
-use crate::{cipher::Cipher, db::{connection::{Credentials, establish_connection}, schema::create_tables}};
+use crate::{cipher::Cipher, db::{connection::{Credentials, establish_connection}, models::create_tables}};
 mod cipher;
 
 mod db;
