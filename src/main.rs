@@ -21,9 +21,7 @@ fn main() {
     let cipher = Cipher::new();
     let token = tokenize("blah", &cipher, &mut client);
     println!("tokenized input - {:?}", &token);
-    println!("{:?}", detokenize(&token, &cipher));
-
-
+    println!("detokenized: {:?}", detokenize(&5, &mut client));
 }
 
 fn tokenize(input: &str, cipher: &Cipher, client: &mut Client) -> String {
@@ -36,9 +34,12 @@ fn tokenize(input: &str, cipher: &Cipher, client: &mut Client) -> String {
     tokenized_string
 }
 
-fn detokenize(input: &str, cipher: &Cipher) -> String {
-    let ciphertext = hex::decode(input).unwrap();
+fn detokenize(token_id: &i32, client: &mut Client) -> String {
+    let (tokenised_string, key, iv) = db::queries::read_tokenized_data(client, token_id).unwrap();
+    //print!("retrieved tokenised string {}, key {:?}, iv {:?}", tokenised_string, key, iv);
+    let cipher = Cipher::from(key, iv);
+    let ciphertext = hex::decode(tokenised_string).unwrap();
     let mut buffer = ciphertext.to_vec();
-    let decrypted = cipher.clone().decrypt(&buffer);
+    let decrypted = cipher.decrypt(&buffer);
     String::from_utf8(decrypted.to_vec()).unwrap()
 }
