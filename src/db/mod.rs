@@ -1,17 +1,15 @@
 use postgres::{Client, NoTls, Error};
 
-struct Credentials {
-    username: String,
-    password: String,
-    url: String,
+pub struct Credentials {
+    pub username: String,
+    pub password: String,
+    pub url: String,
+    pub port: String,
+    pub db_name: String,
 }
 
-pub fn establish_connection() {
-    let credentials = Credentials {
-        username: std::env::var("DB_USERNAME").expect("DB_USERNAME must be set"),
-        password: std::env::var("DB_PASSWORD").expect("DB_PASSWORD must be set"),
-        url: std::env::var("DB_URL").expect("DB_URL must be set")
-    };
-    let mut client = Client::connect(format!("postgresql://{}:{}@{}/library", credentials.username, credentials.password, credentials.url).as_str(), NoTls).unwrap();
-
+pub fn establish_connection(credentials: Credentials) {
+    let mut client = Client::connect(format!("postgresql://{}:{}@{}:{}/{}", credentials.username, credentials.password, credentials.url, credentials.port, credentials.db_name).as_str(), NoTls).
+                                     expect("Failed to connect to database");
+    println!("Connected to database");
 }

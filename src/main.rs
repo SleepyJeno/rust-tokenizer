@@ -1,5 +1,5 @@
 use block_modes::BlockMode;
-use crate::cipher::Cipher;
+use crate::{cipher::Cipher, db::{Credentials, establish_connection}};
 mod cipher;
 mod db;
 
@@ -10,6 +10,17 @@ fn main() {
     //println!("cipher key {:?}, iv {:?}", key, iv);
     println!("tokenized input - {:?}", &token);
     println!("{:?}", detokenize(&token, &cipher));
+
+
+    let credentials = Credentials {
+        username: std::env::var("DB_USERNAME").expect("DB_USERNAME must be set"),
+        password: std::env::var("DB_PASSWORD").expect("DB_PASSWORD must be set"),
+        url: std::env::var("DB_URL").expect("DB_URL must be set"),
+        port: std::env::var("DB_PORT").expect("DB_PORT must be set"),
+        db_name: std::env::var("DB_NAME").expect("DB_NAME must be set"),
+    };
+
+    establish_connection(credentials);
 }
 
 fn tokenize(input: &str, cipher: &Cipher) -> String {
