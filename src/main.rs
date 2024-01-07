@@ -20,8 +20,6 @@ fn main() {
 
     let cipher = Cipher::new();
     let token = tokenize("blah", &cipher, &mut client);
-    let (key, iv) = cipher.get_cipher_data();
-    println!("cipher key {:?}, iv {:?}", key, iv);
     println!("tokenized input - {:?}", &token);
     println!("{:?}", detokenize(&token, &cipher));
 
@@ -33,7 +31,8 @@ fn tokenize(input: &str, cipher: &Cipher, client: &mut Client) -> String {
     let plaintext = input.as_bytes();
     let ciphertext = cipher.encrypt(&plaintext);
     let tokenized_string = hex::encode(ciphertext);
-    db::queries::write_tokenized_data(client, &tokenized_string).ok();
+    let (key, iv) = cipher.get_cipher_data();
+    db::queries::write_tokenized_data(client, &tokenized_string, &key, &iv).ok();
     tokenized_string
 }
 

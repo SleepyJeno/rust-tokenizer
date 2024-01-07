@@ -12,8 +12,8 @@ pub fn create_tables(client: &mut Client) -> Result<(), Error> {
     let keys_table = "CREATE TABLE IF NOT EXISTS keys (
                             key_id SERIAL PRIMARY KEY,
                             token_id INT REFERENCES tokens(token_id) ON DELETE CASCADE,
-                            cipher_key integer[] NOT NULL,
-                            iv integer[] NOT NULL,
+                            cipher_key BYTEA NOT NULL,
+                            iv BYTEA NOT NULL,
                             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
                             )";
     client.batch_execute(keys_table)?;
