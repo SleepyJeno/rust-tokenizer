@@ -1,4 +1,4 @@
-use postgres::{Client, NoTls, Error};
+use postgres::{Client, NoTls};
 
 pub struct Credentials {
     pub username: String,
@@ -11,7 +11,7 @@ pub struct Credentials {
 
 //TODO: add tls mode support
 pub fn establish_connection(credentials: Credentials) -> Client{
-    let mut client = Client::connect(
+    let client = Client::connect(
                                     format!("host={} port ={} user={} password={} dbname={} sslmode={}",
                                     credentials.host, credentials.port, credentials.username, credentials.password, credentials.db_name, credentials.ssl_mode).as_str(),
                                     NoTls)

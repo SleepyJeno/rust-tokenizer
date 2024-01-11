@@ -1,6 +1,4 @@
 use postgres::{Client, Error};
-use chrono::{DateTime, Utc};
-
 
 //TODO replace raw sql with ORM i.e. Diesel
 pub fn write_tokenized_data(client: &mut Client, tokenized_string: &String, cipher_key: &Vec<u8>, cipher_iv: &Vec<u8>) -> Result<(), Error> {
