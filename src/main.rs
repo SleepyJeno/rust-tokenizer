@@ -15,13 +15,17 @@ fn main() {
     };
 
     let mut client = establish_connection(credentials);
-    create_tables(&mut client).expect("Error creating DB tables");
+    let tables_exist =  db::models::check_tables_exist(&mut client).unwrap();
+    if !tables_exist {
+        println!("No DB tables found - creating DB tables");
+        create_tables(&mut client).expect("Error creating DB tables");
+    }
 
 
     let cipher = Cipher::new();
-    let token = tokenize("blah", &cipher, &mut client);
+    let token = tokenize("abcd1234", &cipher, &mut client);
     println!("tokenized input - {:?}", &token);
-    println!("detokenized: {:?}", detokenize(&5, &mut client));
+    println!("detokenized: {:?}", detokenize(&token, &mut client));
 }
 
 fn tokenize(input: &str, cipher: &Cipher, client: &mut Client) -> String {
@@ -34,9 +38,8 @@ fn tokenize(input: &str, cipher: &Cipher, client: &mut Client) -> String {
     tokenized_string
 }
 
-fn detokenize(token_id: &i32, client: &mut Client) -> String {
-    let (tokenised_string, key, iv) = db::queries::read_tokenized_data(client, token_id).unwrap();
-    //print!("retrieved tokenised string {}, key {:?}, iv {:?}", tokenised_string, key, iv);
+fn detokenize(tokenized_string: &String, client: &mut Client) -> String {
+    let (tokenised_string, key, iv) = db::queries::read_tokenized_data(client, tokenized_string).unwrap();
     let cipher = Cipher::from(key, iv);
     let ciphertext = hex::decode(tokenised_string).unwrap();
     let mut buffer = ciphertext.to_vec();

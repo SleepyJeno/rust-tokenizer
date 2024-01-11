@@ -6,7 +6,8 @@ pub fn create_tables(client: &mut Client) -> Result<(), Error> {
                             token_id SERIAL PRIMARY KEY,
                             tokenized_string VARCHAR(255) NOT NULL,
                             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-                            )";
+                            );
+                            CREATE INDEX idx_tokenized_string ON Tokens (tokenized_string);";
     client.batch_execute(tokens_table)?;
 
     let keys_table = "CREATE TABLE IF NOT EXISTS keys (
@@ -21,6 +22,12 @@ pub fn create_tables(client: &mut Client) -> Result<(), Error> {
     Ok(())
 }
 
-//TODO:
-//- add function to check if tables exist
-//- add function to check if table schema matches
+pub fn check_tables_exist(client: &mut Client) -> Result<bool, Error> {
+    let tokens_table = "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'tokens');";
+    let keys_table = "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'keys');";
+
+    let tokens_exist = client.query_one(tokens_table, &[])?.get::<_, bool>(0);
+    let keys_exist = client.query_one(keys_table, &[])?.get::<_, bool>(0);
+
+    Ok(tokens_exist && keys_exist)
+}

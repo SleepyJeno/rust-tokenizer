@@ -22,11 +22,11 @@ pub fn write_tokenized_data(client: &mut Client, tokenized_string: &String, ciph
     Ok(())
 }
 
-pub fn read_tokenized_data(client: &mut Client, token_id: &i32) -> Result<(String, Vec<u8>, Vec<u8>), Error> {
-    let tokens_query = "SELECT tokenized_string, cipher_key, iv FROM tokens INNER JOIN keys ON tokens.token_id = keys.token_id WHERE tokens.token_id = $1";
+pub fn read_tokenized_data(client: &mut Client, tokenized_string: &String) -> Result<(String, Vec<u8>, Vec<u8>), Error> {
+    let tokens_query = "SELECT tokenized_string, cipher_key, iv FROM tokens INNER JOIN keys ON tokens.token_id = keys.token_id WHERE tokens.tokenized_string = $1";
 
     let row: postgres::Row = client
-        .query_one(tokens_query, &[&token_id]).expect("Error reading the token from the DB");
+        .query_one(tokens_query, &[&tokenized_string]).expect("Error reading the token from the DB");
 
     let tokenized_string: String = row.get("tokenized_string");
     let cipher_key: Vec<u8> = row.get("cipher_key");
