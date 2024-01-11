@@ -7,6 +7,13 @@
 
 ## Requirements:
 * Postgresql database engine version >= 12
+* Docker
 
-### Tokenization algorithm:
+## Usage:
+* A one-click setup is available with Docker: 
+```
+docker compose up
+```
+
+## Tokenization algorithm:
 * A random hash is generated for every input and is stored along with the tokenized string
