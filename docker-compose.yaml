@@ -4,14 +4,14 @@ services:
   postgres:
     image: postgres:latest
     environment:
-      - POSTGRES_PASSWORD=test_password_123
-      - POSTGRES_DB=tokenizer_db
-      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_DB=${PG_DB}
+      - POSTGRES_USER=${PG_USERNAME}
     #to avoid conflicts on the host we use a custom port
     ports:
-      - '5443:5432'
+      - '5443:${PG_PORT}'
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'pg_isready -U postgres'"]
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${PG_USERNAME}'"]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -20,12 +20,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
     environment:
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=test_password_123
+      - DB_USERNAME=${PG_USERNAME}
+      - DB_PASSWORD=${PG_PASSWORD}
       - DB_HOST=postgres
-      - DB_NAME=tokenizer_db
-      - DB_PORT='5432' #containers must reference each other by actual container ports
+      - DB_NAME=${PG_DB}
+      - DB_PORT=${PG_PORT} #containers must reference each other by actual container ports
     depends_on:
       postgres:
         condition: service_healthy

@@ -10,9 +10,23 @@
 * Docker
 
 ## Usage:
-* A one-click setup is available with Docker: 
+* A one-click setup is available with Docker. The environment variables are set in `.env`
 ```
-docker compose up
+docker compose up -d
+```
+* Send a tokenization query using `curl`
+```
+ curl -v -H "Content-Type: application/json" -X POST  http://<url>:<port>/tokenize -d '{"input": "your_string_here"}'   
+```
+* (Optional) retrieve your tokenized string from the database with `psql`
+```
+export 
+export PGPASSWORD=<your_pg_password>
+psql -h localhost -p 5443 -u postgres -c "SELECT * FROM tokens WHERE token_id = <your_token_id>"
+```
+* Send a detokinization query using `curl`
+```
+curl -v -H "Content-Type: application/json" -X POST http://<url>:<port>/detokenize -d '{"input": "your_tokenized_string_here"}'
 ```
 
 ## Tokenization algorithm:
