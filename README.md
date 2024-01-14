@@ -14,6 +14,10 @@
 ```
 docker compose up
 ```
+* Send a tokenization query using `curl`
+```
+ curl -v -H "Content-Type: application/json" -X POST  http://<url>:<port>/tokenize -d '{"input": "your_string_here"}'   
+```
 
 ## Tokenization algorithm:
 * A random hash is generated for every input and is stored along with the tokenized string
