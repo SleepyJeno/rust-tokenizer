@@ -11,7 +11,7 @@ pub struct Credentials {
 }
 
 //TODO: add tls mode support
-pub async fn establish_connection() -> Result<(Client), Error>{
+pub async fn establish_connection() -> Result<Client, Error>{
 
     let credentials = Credentials {
         username: std::env::var("DB_USERNAME").expect("DB_USERNAME must be set"),
