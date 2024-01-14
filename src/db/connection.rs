@@ -1,4 +1,5 @@
-use postgres::{Client, NoTls};
+use tokio_postgres::{NoTls, Error, Client};
+use tokio;
 
 pub struct Credentials {
     pub username: String,
@@ -10,13 +11,17 @@ pub struct Credentials {
 }
 
 //TODO: add tls mode support
-pub fn establish_connection(credentials: Credentials) -> Client{
-    let client = Client::connect(
+pub async fn establish_connection(credentials: Credentials) -> Result<Client, Error>{
+    let (client, connection) = tokio_postgres::connect(
                                     format!("host={} port ={} user={} password={} dbname={} sslmode={}",
                                     credentials.host, credentials.port, credentials.username, credentials.password, credentials.db_name, credentials.ssl_mode).as_str(),
                                     NoTls)
-                                    .expect("Failed to connect to database"
-                                    );
+                                    .await?;
+    tokio::spawn(async move {
+        if let Err(e) = connection.await {
+            eprintln!("connection error: {}", e);
+        }
+    });
     println!("Connected to database");
-    client
+    Ok(client)
 }

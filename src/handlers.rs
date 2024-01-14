@@ -28,8 +28,9 @@ async fn tokenize(data: web::Json<TokenizeRequest>) -> impl Responder  {
     let input = &data.input;
 
     let result = tokenization::tokenize_str(input);
-    let response: TokenizeResponse = TokenizeResponse { result };
-    HttpResponse::Ok().json(response)
+    //let response: TokenizeResponse = TokenizeResponse { result };
+    //HttpResponse::Ok().json(response)
+    HttpResponse::Ok()
 }
 
 
