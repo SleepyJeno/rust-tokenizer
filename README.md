@@ -10,9 +10,9 @@
 * Docker
 
 ## Usage:
-* A one-click setup is available with Docker: 
+* A one-click setup is available with Docker. The environment variables are set in `.env`
 ```
-docker compose up
+docker compose up -d
 ```
 * Send a tokenization query using `curl`
 ```
