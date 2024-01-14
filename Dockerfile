@@ -1,7 +1,13 @@
 FROM rust:slim-buster
 
-COPY . ./rust_tokenizer
-WORKDIR ./rust_tokenizer
+RUN mkdir -p /opt/rust_tokenizer
+WORKDIR /opt/rust_tokenizer
+
+COPY Cargo.* /opt/rust_tokenizer
+COPY .env /opt/rust_tokenizer
+COPY Dockerfile /opt/rust_tokenizer
+COPY README.md /opt/rust_tokenizer
+COPY src/ /opt/rust_tokenizer/src
 
 RUN cargo build --release
 
