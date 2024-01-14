@@ -9,7 +9,7 @@ pub async fn tokenize_str(input: &str) -> String {
     let ciphertext = cipher.encrypt(&plaintext);
     let tokenized_string = hex::encode(ciphertext);
     let (key, iv) = cipher.get_cipher_data();
-    //db::queries::write_tokenized_data(client, &tokenized_string, &key, &iv).ok();
+    db::queries::write_tokenized_data(&tokenized_string, &key, &iv).await.ok();
     tokenized_string
 }
 

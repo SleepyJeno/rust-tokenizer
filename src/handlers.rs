@@ -27,10 +27,9 @@ impl Default for TokenizeResponse {
 async fn tokenize(data: web::Json<TokenizeRequest>) -> impl Responder  {
     let input = &data.input;
 
-    let result = tokenization::tokenize_str(input);
-    //let response: TokenizeResponse = TokenizeResponse { result };
-    //HttpResponse::Ok().json(response)
-    HttpResponse::Ok()
+    let result = tokenization::tokenize_str(input).await;
+    let response: TokenizeResponse = TokenizeResponse { result };
+    HttpResponse::Ok().json(response)
 }
 
 

@@ -1,7 +1,10 @@
 use tokio_postgres::{Client, Error};
 
+use crate::db::connection::establish_connection;
+
 //TODO replace raw sql with ORM i.e. Diesel
-pub async fn write_tokenized_data(client: &mut Client, tokenized_string: &String, cipher_key: &Vec<u8>, cipher_iv: &Vec<u8>) -> Result<(), Error> {
+pub async fn write_tokenized_data(tokenized_string: &String, cipher_key: &Vec<u8>, cipher_iv: &Vec<u8>) -> Result<(), Error> {
+    let client = establish_connection().await?;
     let tokens_query = "INSERT INTO tokens (tokenized_string) VALUES ($1) RETURNING token_id, created_at";
     let keys_query = "INSERT INTO Keys (token_id, cipher_key, iv) VALUES ($1, $2, $3) RETURNING key_id";
 
@@ -20,7 +23,8 @@ pub async fn write_tokenized_data(client: &mut Client, tokenized_string: &String
     Ok(())
 }
 
-pub async fn read_tokenized_data(client: &mut Client, tokenized_string: &String) -> Result<(String, Vec<u8>, Vec<u8>), Error> {
+pub async fn read_tokenized_data(tokenized_string: &String) -> Result<(String, Vec<u8>, Vec<u8>), Error> {
+    let client = establish_connection().await?;
     let tokens_query = "SELECT tokenized_string, cipher_key, iv FROM tokens INNER JOIN keys ON tokens.token_id = keys.token_id WHERE tokens.tokenized_string = $1";
 
     let row: tokio_postgres::Row = client
