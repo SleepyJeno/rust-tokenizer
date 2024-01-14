@@ -1,5 +1,4 @@
-use tokio_postgres::{Client, Error};
-
+use tokio_postgres::Error;
 use crate::db::connection::establish_connection;
 
 //TODO replace raw sql with ORM i.e. Diesel

@@ -1,6 +1,5 @@
 use actix_web::{self, HttpResponse, Responder, web};
 use crate::tokenization;
-use crate::db;
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -28,6 +27,15 @@ async fn tokenize(data: web::Json<TokenizeRequest>) -> impl Responder  {
     let input = &data.input;
 
     let result = tokenization::tokenize_str(input).await;
+    let response: TokenizeResponse = TokenizeResponse { result };
+    HttpResponse::Ok().json(response)
+}
+
+#[actix_web::post("/detokenize")]
+async fn detokenize(data: web::Json<TokenizeRequest>) -> impl Responder  {
+    let input = &data.input;
+
+    let result = tokenization::detokenize_str(input).await;
     let response: TokenizeResponse = TokenizeResponse { result };
     HttpResponse::Ok().json(response)
 }

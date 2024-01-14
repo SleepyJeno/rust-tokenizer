@@ -1,6 +1,5 @@
-use tokio_postgres::Client;
 use crate::cipher::Cipher;
-use crate::db;
+use crate::db::queries;
 
 pub async fn tokenize_str(input: &str) -> String {
     //TODO: add check for input string size to be less than 128 bytes
@@ -9,15 +8,21 @@ pub async fn tokenize_str(input: &str) -> String {
     let ciphertext = cipher.encrypt(&plaintext);
     let tokenized_string = hex::encode(ciphertext);
     let (key, iv) = cipher.get_cipher_data();
-    db::queries::write_tokenized_data(&tokenized_string, &key, &iv).await.ok();
+    queries::write_tokenized_data(&tokenized_string, &key, &iv).await.ok();
     tokenized_string
 }
 
-// pub async fn detokenize_str(tokenized_string: &String, client: &mut Client) -> String {
-//     let Ok((tokenised_string, key, iv)) = db::queries::read_tokenized_data(client, tokenized_string).await;
-//     let cipher = Cipher::from(key, iv);
-//     let ciphertext = hex::decode(tokenised_string).unwrap();
-//     let buffer = ciphertext.to_vec();
-//     let decrypted = cipher.decrypt(&buffer);
-//     String::from_utf8(decrypted.to_vec()).unwrap()
-// }
+pub async fn detokenize_str(tokenized_string: &String) -> String {
+    let (tokenized_string_result, cipher_key_result, cipher_iv_result) =
+        match queries::read_tokenized_data(&tokenized_string).await {
+            Ok((tokenized_string, cipher_key, cipher_iv)) => (tokenized_string, cipher_key, cipher_iv),
+            Err(e) => {
+                return e.to_string();
+            }
+        };
+    let cipher = Cipher::from(cipher_key_result, cipher_iv_result);
+    let ciphertext = hex::decode(tokenized_string_result).unwrap();
+    let buffer = ciphertext.to_vec();
+    let decrypted = cipher.decrypt(&buffer);
+    String::from_utf8(decrypted.to_vec()).unwrap()
+}
